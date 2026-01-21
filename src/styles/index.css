@@ -226,19 +226,64 @@ body {
     border: 1px solid #ddd;
     min-width: 120px;
     text-align: center;
-    display: flex;
-    align-items: center;
     justify-content: center;
-}
-
-.date-pill-display.no-hover {
-    border: none;
-    background-color: #f8f8f8;
 }
 
 .date-display {
     display: none;
     /* Hide old display */
+}
+
+/* Quill Editor Adjustments */
+.quill-editor-container .ql-container.ql-snow {
+    border: none;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.quill-editor-container .ql-editor {
+    padding: 5px;
+    min-height: 50px;
+}
+
+.next-week-container .ql-container.ql-snow {
+    border: none;
+}
+
+.next-week-container .ql-editor {
+    min-height: 140px;
+}
+
+.ql-toolbar.ql-snow {
+    border: 1px solid #eee !important;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.no-print .ql-toolbar.ql-snow {
+    display: block;
+}
+
+/* Hide toolbar in the actual report view/PDF */
+.report-container .ql-toolbar.ql-snow {
+    display: none;
+}
+
+/* Show toolbar only when focused or in editor mode? 
+   Actually, requirement says "editable rich text".
+   Let's show the toolbar in the editor but hide it on export. */
+
+.exporting .ql-toolbar.ql-snow {
+    display: none !important;
+}
+
+/* Adjust editor borders to be invisible in the report */
+.report-container .ql-container {
+    border: none !important;
+}
+
+.report-container .ql-editor {
+    padding: 5px 0;
 }
 
 /* Daily Entries */

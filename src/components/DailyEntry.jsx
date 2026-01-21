@@ -1,5 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { formatDateJP } from '../utils/dateUtils';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const DailyEntry = ({
     date,
@@ -11,18 +13,9 @@ const DailyEntry = ({
 }) => {
     const [showMenu, setShowMenu] = React.useState(false);
     const [menuPos, setMenuPos] = React.useState({ x: 0, y: 0 });
-    const textareaRef = useRef(null);
-
-    // Auto-resize textarea
-    useEffect(() => {
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
-            textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
-        }
-    }, [data.content]);
 
     if (isMergedWithPrevious) {
-        return null; // Don't render if merged into previous
+        return null;
     }
 
     const handleDateClick = (e) => {
@@ -37,27 +30,18 @@ const DailyEntry = ({
     };
 
     // Determine pill style
-    const isFilled = data.content && data.content.trim().length > 0;
-    const isOrange = isFilled || data.isHoliday === false;
-    // Requirement: "Inputting (entered) days have orange background. Default is gray."
-    // Also "Holiday... background remains gray".
-    // So: Holiday -> Gray. Workday with content -> Orange? 
-    // "Initial value is gray". "BackgroundColor becomes orange while inputting/entered".
-    // Let's rely on content existence for orange, unless specific logic applies.
-    // Actually, let's keep it simple: If has content AND not holiday -> Orange. 
+    const isFilled = data.content && data.content.trim().length > 0 && data.content !== '<p><br></p>';
+    const pillClass = (isFilled && !data.isHoliday) ? 'orange' : 'gray';
 
-    const pillClass = (data.content?.length > 0 && !data.isHoliday) ? 'orange' : 'gray';
-
-    // Label construction
-    let dateLabel = formatDateJP(date);
-    if (nextDayIsMerged) {
-        // We need to know HOW MANY days are merged. 
-        // This simple prop might not be enough if we support multi-day merge chains (Mon-Wed).
-        // Parent should pass the "End Date" of this block if it spans.
-    }
-
-    // For now, let's assume the parent handles the "Label" calculation if it's complicated,
-    // or we pass a "dateLabelOverride" prop.
+    // Quill modules configuration
+    const modules = {
+        toolbar: [
+            ['bold', 'italic', 'underline'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            [{ 'color': [] }, { 'background': [] }],
+            ['clean']
+        ],
+    };
 
     return (
         <div className="daily-entry-wrapper">
@@ -65,21 +49,21 @@ const DailyEntry = ({
                 className={`date-pill ${pillClass}`}
                 onClick={handleDateClick}
             >
-                {/* We'll use a prop for the label to handle ranges cleanly */}
                 {data.customLabel || formatDateJP(date)}
             </div>
 
             {data.isHoliday && <span className="holiday-label">祝日</span>}
 
             {!data.isHoliday && (
-                <textarea
-                    ref={textareaRef}
-                    className="entry-textarea"
-                    placeholder=""
-                    value={data.content || ''}
-                    onChange={(e) => onUpdate({ ...data, content: e.target.value })}
-                    rows={2}
-                />
+                <div className="quill-editor-container">
+                    <ReactQuill
+                        theme="snow"
+                        value={data.content || ''}
+                        onChange={(content) => onUpdate({ ...data, content })}
+                        modules={modules}
+                        placeholder="内容を入力..."
+                    />
+                </div>
             )}
 
             {showMenu && (
@@ -100,23 +84,6 @@ const DailyEntry = ({
                                 前日と同じ
                             </div>
                         )}
-                        {/* Logic to UN-merge? "Change to Workday" implies unmerge if currently merged? 
-                    Actually "Same as previous" is triggered from the SECOND day. 
-                    So if I am Mon, I can't merge previous.
-                    If I am Tue, and I click Tue, I can "Same as previous".
-                    If I am Tue and ALREADY merged, I am hidden! I can't click! 
-                    
-                    Wait, if I merge Tue into Mon, Tue DISAPPEARS. How do I undo it?
-                    The requirement says: "Inputted daily report can be changed anytime later".
-                    "If Click Tuesday... 'Same as previous'... dates integrate".
-                    If integrated, "2025/12/22 ~ 2025/12/23" appears on the merged block.
-                    Does clicking THAT block allow un-merging? 
-                    Yes, likely.
-                    So if I click the Merged Block, I should see "Split" or "Reset"?
-                    Or simply, if I act on the Mon-Tue block, are we acting on Mon or Tue?
-                    Users might want to unmerge Tue. 
-                    I should add an "Unmerge last day" option if the current block spans multiple days.
-                 */}
                         {daySpansMultiple(data) && (
                             <div className="popover-item" onClick={() => handleMenuSelect({ unmergeLast: true })}>
                                 解除 (最終日を分離)
