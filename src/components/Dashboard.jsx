@@ -26,7 +26,7 @@ const Dashboard = ({ onSelectReport, onCreateNew }) => {
     }, []);
 
     const handleDelete = (id, date) => {
-        if (window.confirm(`${date} のレポートを削除してもよろしいですか？`)) {
+        if (window.confirm(`${formatDateJP(new Date(date))} のレポートを削除してもよろしいですか？`)) {
             fetch(`http://localhost:3001/api/reports/${id}`, {
                 method: 'DELETE',
             })
@@ -72,7 +72,7 @@ const Dashboard = ({ onSelectReport, onCreateNew }) => {
                         <tbody>
                             {reports.map(report => (
                                 <tr key={report.id}>
-                                    <td>{report.startDate}</td>
+                                    <td>{formatDateJP(new Date(report.startDate))}</td>
                                     <td>{/* Simple calculation for end date display if needed */}
                                         {formatDateJP(new Date(new Date(report.startDate).getTime() + 4 * 24 * 60 * 60 * 1000))}
                                     </td>
