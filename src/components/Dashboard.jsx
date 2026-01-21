@@ -63,7 +63,7 @@ const Dashboard = ({ onSelectReport, onCreateNew, onDuplicate }) => {
                         <thead>
                             <tr>
                                 <th>開始日</th>
-                                <th>終了日（目安）</th>
+                                <th>終了日</th>
                                 <th>報告者</th>
                                 <th>更新日時</th>
                                 <th>操作</th>
