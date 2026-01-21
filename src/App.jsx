@@ -158,12 +158,53 @@ function App() {
         });
     };
 
+    const handleDuplicate = (report) => {
+        if (window.confirm(`${formatDateJP(new Date(report.startDate))} の日報を複製して作成しますか？\n（日付は1週間後に設定されます）`)) {
+            setReportId(null); // Clear ID to create new
+            setReporterName(report.reporterName || '');
+            const nextDate = addDays(parseISO(report.startDate), 7); // Set to next week
+            setStartDate(nextDate);
+            // Copy entries but maybe clear specific things if needed? No, user wants copy.
+            // Parse entries if it's string in DB but here report object might verify structure.
+            // In fetchReports, 'entries' is text? No, backend sends JSON object based on my memory of server.js?
+            // Wait, server code used JSON.stringify on INSERT, but does it parse on SELECT?
+            // Let's check fetchReports in Dashboard. It just sets reports.
+            // Wait, data loaded in loadReport calls setEntries(data.entries).
+            // But in Dashboard 'reports' probably has entries as string if server doesn't parse it.
+            // Server code: `res.json({ id: ..., entires: entriesJson })`.
+            // Check server.js GET /reports
+            // I need to be careful if 'entries' in the list item is object or string.
+            // If it's string I must parse it.
+            // Let's assume I need to fetch the full report specifically to be safe OR check the data type.
+            // To be safe, I will use loadReport logic but for duplication.
+
+            // Re-implement fetching to be safe or use what we have if confident.
+            // Dashboard `reports` list usually comes from `SELECT * FROM reports`.
+            // In `server.js`, `db.all("SELECT * FROM reports", ...)` returns rows.
+            // The `entries` column is TEXT. SQLite driver returns string.
+            // So `report.entries` passed from Dashboard is likely a STRING.
+            // I need to parse it.
+
+            let parsedEntries = {};
+            try {
+                parsedEntries = typeof report.entries === 'string' ? JSON.parse(report.entries) : report.entries;
+            } catch (e) {
+                console.error("Failed to parse entries for duplication", e);
+            }
+
+            setEntries(parsedEntries || {});
+            setNextWeekPlan(report.nextWeekPlan || '');
+            setView('editor');
+        }
+    };
+
     const renderMainContent = () => {
         if (view === 'dashboard') {
             return (
                 <Dashboard
                     onSelectReport={(date) => loadReport(date)}
                     onCreateNew={handleCreateNew}
+                    onDuplicate={handleDuplicate}
                 />
             );
         }

@@ -3,7 +3,7 @@ import { formatDateJP, formatDateTimeJP } from '../utils/dateUtils';
 import { format } from 'date-fns';
 import pkg from '../../package.json';
 
-const Dashboard = ({ onSelectReport, onCreateNew }) => {
+const Dashboard = ({ onSelectReport, onCreateNew, onDuplicate }) => {
     const [reports, setReports] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -81,6 +81,13 @@ const Dashboard = ({ onSelectReport, onCreateNew }) => {
                                     <td style={{ display: 'flex', gap: '8px' }}>
                                         <button className="secondary-button" onClick={() => onSelectReport(report.startDate)}>
                                             編集
+                                        </button>
+                                        <button
+                                            className="secondary-button"
+                                            style={{ color: '#1890ff', borderColor: '#1890ff' }}
+                                            onClick={() => onDuplicate(report)}
+                                        >
+                                            複製
                                         </button>
                                         <button
                                             className="secondary-button"
