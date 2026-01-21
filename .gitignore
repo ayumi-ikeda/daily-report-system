@@ -1,1 +1,19 @@
+# IDE
 daily-report-system.code-workspace
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+dist/
+
+# Env
+.env*
+
+# DB
+server/database.sqlite
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
