@@ -35,7 +35,6 @@ function App() {
             })
             .catch(err => {
                 console.error('Failed to load report', err);
-                // If not found and it's a date, we might be creating a new one with that date
                 if (idOrDate.includes('-')) {
                     setStartDate(parseISO(idOrDate));
                     setEntries({});
@@ -73,14 +72,13 @@ function App() {
         const today = new Date();
         const monday = getMonday(today);
         setReportId(null);
-        setReporterName(''); // Maybe keep the last name?
+        setReporterName('');
         setStartDate(monday);
         setEntries({});
         setNextWeekPlan('');
         setView('editor');
     };
 
-    // Logic from previous App.jsx
     const updateEntry = (dateKey, updates) => {
         setEntries(prev => ({
             ...prev,
@@ -112,6 +110,21 @@ function App() {
         }
     };
 
+    const handleExport = () => {
+        const element = document.querySelector('.report-container');
+        const opt = {
+            margin: 0,
+            filename: `report_${format(startDate, 'yyyyMMdd')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        element.classList.add('exporting');
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.classList.remove('exporting');
+        });
+    };
+
     if (view === 'dashboard') {
         return (
             <Dashboard
@@ -121,7 +134,6 @@ function App() {
         );
     }
 
-    // Prep for Editor Render
     const weekDates = getWeekDays(startDate);
     const renderList = [];
     let skipCount = 0;
@@ -158,21 +170,6 @@ function App() {
         );
         if (entry.span > 1) skipCount = entry.span - 1;
     });
-
-    const handleExport = () => {
-        const element = document.querySelector('.report-container');
-        const opt = {
-            margin: 0,
-            filename: `report_${format(startDate, 'yyyyMMdd')}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        element.classList.add('exporting');
-        html2pdf().set(opt).from(element).save().then(() => {
-            element.classList.remove('exporting');
-        });
-    };
 
     return (
         <div>
