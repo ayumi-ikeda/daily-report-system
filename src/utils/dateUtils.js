@@ -14,6 +14,10 @@ export const formatDateJP = (date) => {
     return format(date, 'yyyy年MM月dd日', { locale: ja });
 };
 
+export const formatDateTimeJP = (date) => {
+    return format(date, 'yyyy年MM月dd日 HH:mm', { locale: ja });
+};
+
 // Returns an array of 5 dates (Mon-Fri) starting from the given Monday
 export const getWeekDays = (mondayDate) => {
     const days = [];

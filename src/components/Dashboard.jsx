@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { formatDateJP } from '../utils/dateUtils';
+import { formatDateJP, formatDateTimeJP } from '../utils/dateUtils';
 import { format } from 'date-fns';
 import pkg from '../../package.json';
 
@@ -77,7 +77,7 @@ const Dashboard = ({ onSelectReport, onCreateNew }) => {
                                         {formatDateJP(new Date(new Date(report.startDate).getTime() + 4 * 24 * 60 * 60 * 1000))}
                                     </td>
                                     <td>{report.reporterName || '未入力'}</td>
-                                    <td>{new Date(report.updatedAt).toLocaleString('ja-JP')}</td>
+                                    <td>{formatDateTimeJP(new Date(report.updatedAt))}</td>
                                     <td style={{ display: 'flex', gap: '8px' }}>
                                         <button className="secondary-button" onClick={() => onSelectReport(report.startDate)}>
                                             編集
