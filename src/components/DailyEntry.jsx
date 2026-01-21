@@ -36,7 +36,7 @@ const DailyEntry = ({
     // Quill modules configuration
     const modules = {
         toolbar: [
-            ['bold', 'italic', 'underline'],
+            ['bold', 'italic', 'underline', 'strike'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
             [{ 'color': [] }, { 'background': [] }],
             ['clean']

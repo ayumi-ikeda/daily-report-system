@@ -119,6 +119,7 @@ body {
     gap: 15px;
 }
 
+/* Ensure strict A4 width handling */
 .report-container {
     width: 210mm;
     min-height: 297mm;
@@ -129,6 +130,8 @@ body {
     flex-direction: column;
     gap: 15px;
     margin-top: 20px;
+    box-sizing: border-box;
+    /* Critical for fitting in 210mm */
 }
 
 .title-section {
@@ -159,6 +162,8 @@ body {
 .header-row {
     display: flex;
     border-bottom: 1px solid var(--border-color);
+    min-height: 45px;
+    /* Ensure enough height */
 }
 
 .header-row:last-child {
@@ -178,7 +183,8 @@ body {
 
 .header-input-container {
     flex-grow: 1;
-    padding: 5px;
+    padding: 2px 5px;
+    /* Reduce vertical padding to let input breathe */
     display: flex;
     align-items: center;
 }
@@ -196,10 +202,13 @@ body {
 .report-input {
     border: none;
     background: transparent;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    /* Slightly larger for readability */
     padding: 5px;
     outline: none;
     width: 100%;
+    line-height: 1.5;
+    /* Ensure text fits line height */
 }
 
 /* Date Input Styling */
@@ -264,9 +273,41 @@ body {
     display: block;
 }
 
-/* Hide toolbar in the actual report view/PDF */
+/* Toolbar is visible by default in editor */
 .report-container .ql-toolbar.ql-snow {
-    display: none;
+    display: block;
+    border-color: #eee;
+    background: #fdfdfd;
+}
+
+/* Hide toolbar only during export or print */
+.exporting .ql-toolbar.ql-snow,
+@media print {
+    .ql-toolbar.ql-snow {
+        display: none !important;
+    }
+}
+
+/* Exporting state overrides for perfect A4 fit */
+.exporting.report-container {
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    min-height: auto !important;
+    height: 296mm;
+    /* Force exact fit, slightly less than 297mm to prevent overflow */
+    overflow: hidden;
+    /* Cut off any tiny overflow */
+    padding: 10mm !important;
+    /* Keep padding */
+    width: 210mm !important;
+}
+
+/* Ensure strikethrough looks correct */
+s,
+strike,
+del {
+    text-decoration: line-through !important;
 }
 
 /* Show toolbar only when focused or in editor mode? 
