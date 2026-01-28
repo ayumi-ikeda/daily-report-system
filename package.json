@@ -1,26 +1,67 @@
 {
-  "version": "0.1.4",
+  "name": "daily-report-system",
+  "version": "1.0.0",
   "type": "module",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "vite",
     "server": "node server/server.js",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:dev": "cross-env NODE_ENV=development concurrently \"vite\" \"electron .\"",
+    "electron:build": "vite build && electron-builder"
   },
   "dependencies": {
-    "@vitejs/plugin-react": "^5.1.2",
     "body-parser": "^2.2.2",
     "concurrently": "^9.2.1",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "express": "^5.2.1",
+    "get-port": "^7.0.0",
     "html2pdf.js": "^0.14.0",
     "lucide-react": "^0.562.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-quill": "^2.0.0",
     "sqlite3": "^5.1.7",
-    "vite": "^7.3.1"
+    "call-bind": "^1.0.8",
+    "call-bind-apply-helpers": "^1.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8",
+    "vite": "^7.3.1",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.example.dailyreportsystem",
+    "productName": "DailyReportSystem",
+    "artifactName": "${productName}-Setup-${version}.${ext}",
+    "asar": true,
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "server/**/*",
+      "package.json",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "linux": {
+      "target": "AppImage",
+      "artifactName": "${productName}-${version}.${ext}"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "public/vite.svg"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

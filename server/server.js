@@ -1,13 +1,24 @@
+// ... imports ...
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import db from './db.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// Serve static files in production/electron
+if (process.env.NODE_ENV === 'production' || process.env.IS_ELECTRON) {
+    app.use(express.static(path.join(__dirname, '../dist')));
+}
 
 // Get all reports
 app.get('/api/reports', (req, res) => {
@@ -79,6 +90,17 @@ app.delete('/api/reports/:id', (req, res) => {
     });
 });
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+const startServer = (portToUse) => {
+    return new Promise((resolve) => {
+        const server = app.listen(portToUse || port, () => {
+            console.log(`Server running at http://localhost:${portToUse || port}`);
+            resolve(server);
+        });
+    });
+};
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    startServer(port);
+}
+
+export { app, startServer };

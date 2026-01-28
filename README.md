@@ -42,10 +42,45 @@ npm run dev:all
 ```
 ※ フロントエンド（Vite）とバックエンド（Express）が同時に起動します。
 
+---
+
+## デスクトップアプリケーション (Electron)
+
+このシステムは Electron を使用して、デスクトップアプリとしてビルド・使用することが可能です。
+
+### デスクトップ版の起動 (開発モード)
+```bash
+npm run electron:dev
+```
+
+### パッケージ化 (ビルド)
+各OS用の実行ファイルを生成します。成果物は `release/` フォルダに出力されます。
+
+#### Windows 用 (インストーラー)
+Windows環境の PowerShell で実行してください。
+```powershell
+npm run electron:build
+```
+※ `DailyReportSystem-Setup-1.0.0.exe` が生成されます。
+
+#### Linux 用 (AppImage)
+```bash
+npm run electron:build
+```
+※ `DailyReportSystem-1.0.0.AppImage` が生成されます。
+
+---
+
 ## 技術資料
 
 ### データベース仕様
-バックエンドでは `sqlite3` を使用しており、データは `server/database.sqlite` に保存されます。
+バックエンドでは `sqlite3` を使用しています。
+
+#### 保存場所
+- **Web開発時**: `server/database.sqlite`
+- **デスクトップアプリ実行時**: ユーザーデータディレクトリに自動的に保存されます。
+    - **Windows**: `%APPDATA%/DailyReportSystem/database.sqlite`
+    - **Linux**: `~/.config/DailyReportSystem/database.sqlite`
 
 #### テーブル定義: `reports`
 | カラム名 | 型 | 説明 |
