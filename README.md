@@ -15,11 +15,13 @@
 ## 画面イメージ
 
 ### ダッシュボード
+
 作成済みのレポートが一覧表示されます。新規作成や、既存レポートの編集・削除が行えます。
 
 ![ダッシュボード画面](docs/images/dashboard.png)
 
 ### 編集画面
+
 日々の業務内容を入力します。日付ラベルをクリックすることで、統合や祝日設定が可能です。
 入力欄はリッチテキストエディタになっており、文字の強調やリスト作成など、見やすいレイアウトで記述できます。
 
@@ -28,18 +30,22 @@
 ## セットアップ
 
 ### 必要条件
-- Node.js (v18以上)
+
+- Node.js (v20.19.0以上 または v22.12.0以上 推奨)
 - sqlite3 (CLIツール、直接アクセスする場合に必要)
 
 ### インストール
+
 ```bash
 npm install
 ```
 
 ### 開発用サーバーの起動 (フロントエンド & バックエンド)
+
 ```bash
 npm run dev:all
 ```
+
 ※ フロントエンド（Vite）とバックエンド（Express）が同時に起動します。
 
 ---
@@ -49,40 +55,57 @@ npm run dev:all
 このシステムは Electron を使用して、デスクトップアプリとしてビルド・使用することが可能です。
 
 ### デスクトップ版の起動 (開発モード)
+
 ```bash
 npm run electron:dev
 ```
 
 ### パッケージ化 (ビルド)
+
 各OS用の実行ファイルを生成します。成果物は `release/` フォルダに出力されます。
 
 #### Windows 用 (インストーラー)
+
 Windows環境の PowerShell で実行してください。
+
 ```powershell
 npm run electron:build
 ```
+
 ※ `DailyReportSystem-Setup-1.0.0.exe` が生成されます。
 
 #### Linux 用 (AppImage)
+
 ```bash
 npm run electron:build
 ```
+
 ※ `DailyReportSystem-1.0.0.AppImage` が生成されます。
+
+> [!TIP]
+> Linux環境で実行時にサンドボックス関連のエラー（`FATAL:setuid_sandbox_host.cc` など）が出る場合は、以下のオプションを付けて実行してください：
+>
+> ```bash
+> ./DailyReportSystem-1.0.0.AppImage --no-sandbox
+> ```
 
 ---
 
 ## 技術資料
 
 ### データベース仕様
+
 バックエンドでは `sqlite3` を使用しています。
 
 #### 保存場所
+
 - **Web開発時**: `server/database.sqlite`
 - **デスクトップアプリ実行時**: ユーザーデータディレクトリに自動的に保存されます。
-    - **Windows**: `%APPDATA%/DailyReportSystem/database.sqlite`
-    - **Linux**: `~/.config/DailyReportSystem/database.sqlite`
+  - **Windows**: `%APPDATA%/DailyReportSystem/database.sqlite`
+  - **Linux**: `~/.config/DailyReportSystem/database.sqlite`
 
 #### テーブル定義: `reports`
+
 | カラム名 | 型 | 説明 |
 | :--- | :--- | :--- |
 | id | INTEGER | プライマリキー、自動増分 |
@@ -93,6 +116,7 @@ npm run electron:build
 | updatedAt | DATETIME | 最終更新日時 |
 
 #### データベースへの直接アクセス方法
+
 ターミナルから `sqlite3` コマンドを使用して直接データを確認できます。
 
 ```bash
@@ -111,6 +135,7 @@ sqlite> .exit
 ```
 
 ## プロジェクト構造
+
 - `src/`: フロントエンド (React)
 - `server/`: バックエンド (Express + SQLite3)
 - `server/database.sqlite`: データベースファイル
