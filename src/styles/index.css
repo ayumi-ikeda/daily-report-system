@@ -280,28 +280,9 @@ body {
     background: #fdfdfd;
 }
 
-/* Hide toolbar only during export or print */
-.exporting .ql-toolbar.ql-snow,
-@media print {
-    .ql-toolbar.ql-snow {
-        display: none !important;
-    }
-}
 
-/* Exporting state overrides for perfect A4 fit */
-.exporting.report-container {
-    margin: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
-    min-height: auto !important;
-    height: 296mm;
-    /* Force exact fit, slightly less than 297mm to prevent overflow */
-    overflow: hidden;
-    /* Cut off any tiny overflow */
-    padding: 10mm !important;
-    /* Keep padding */
-    width: 210mm !important;
-}
+
+
 
 /* Ensure strikethrough looks correct */
 s,
@@ -314,9 +295,7 @@ del {
    Actually, requirement says "editable rich text".
    Let's show the toolbar in the editor but hide it on export. */
 
-.exporting .ql-toolbar.ql-snow {
-    display: none !important;
-}
+
 
 /* Adjust editor borders to be invisible in the report */
 .report-container .ql-container {
@@ -423,24 +402,78 @@ del {
 }
 
 @media print {
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    #root {
+        padding: 0;
+        display: block;
+    }
+
     .no-print {
         display: none !important;
+    }
+
+    .dashboard-container {
+        display: none;
     }
 
     .report-container {
         border: none;
         box-shadow: none;
-        width: 100%;
-        margin: 0;
-        padding: 0;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto;
+        display: block;
     }
 
+    /* Ensure background colors are printed */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Hide toolbar */
+    .ql-toolbar.ql-snow {
+        display: none !important;
+    }
+
+    /* Adjust editor content for print */
+    .ql-container.ql-snow {
+        border: none !important;
+    }
+
+    .ql-editor {
+        padding: 0 !important;
+        min-height: auto !important;
+        overflow: visible !important;
+    }
+
+    /* Hide placeholder text */
+    .ql-editor.ql-blank::before {
+        display: none !important;
+    }
+
+    /* Avoid page breaks inside entries if possible */
+    .daily-entry-wrapper {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    /* Ensure textareas expand (though we are using Quill now) */
     textarea {
         border: none;
         resize: none;
         overflow: hidden;
-        /* Ensure content prints fully? Textarea scroll usually hides in print. 
-           Ideally we swap textarea for div on print, or use contenteditable. 
-           Textarea height adjustment is critical. */
     }
 }

@@ -6,7 +6,7 @@ import DailyEntry from './components/DailyEntry';
 import NextWeekPlan from './components/NextWeekPlan';
 import Dashboard from './components/Dashboard';
 import './styles/index.css';
-import html2pdf from 'html2pdf.js';
+
 
 const API_BASE = 'http://localhost:3001/api';
 
@@ -143,19 +143,8 @@ function App() {
         }
     };
 
-    const handleExport = () => {
-        const element = document.querySelector('.report-container');
-        const opt = {
-            margin: 0,
-            filename: `report_${format(startDate, 'yyyyMMdd')}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        element.classList.add('exporting');
-        html2pdf().set(opt).from(element).save().then(() => {
-            element.classList.remove('exporting');
-        });
+    const handlePrint = () => {
+        window.print();
     };
 
     const handleDuplicate = (report) => {
@@ -256,8 +245,8 @@ function App() {
                         <button onClick={handleSave} className="primary-button">
                             保存
                         </button>
-                        <button onClick={handleExport} style={{ padding: '10px', cursor: 'pointer', fontWeight: 'bold' }}>
-                            PDF Export
+                        <button onClick={handlePrint} style={{ padding: '10px', cursor: 'pointer', fontWeight: 'bold' }}>
+                            印刷 / PDF保存
                         </button>
                     </div>
                 </div>
