@@ -52,7 +52,7 @@ const DailyEntry = ({
                 {data.customLabel || formatDateJP(date)}
             </div>
 
-            {data.isHoliday && <span className="holiday-label">祝日</span>}
+            {data.isHoliday && <span className="holiday-label">{data.holidayType || '祝日'}</span>}
 
             {!data.isHoliday && (
                 <div className="quill-editor-container">
@@ -76,8 +76,11 @@ const DailyEntry = ({
                         <div className="popover-item" onClick={() => handleMenuSelect({ isHoliday: false })}>
                             就業日 (通常)
                         </div>
-                        <div className="popover-item" onClick={() => handleMenuSelect({ isHoliday: true, content: '' })}>
+                        <div className="popover-item" onClick={() => handleMenuSelect({ isHoliday: true, holidayType: '祝祭日', content: '' })}>
                             祝祭日
+                        </div>
+                        <div className="popover-item" onClick={() => handleMenuSelect({ isHoliday: true, holidayType: '有給', content: '' })}>
+                            有給
                         </div>
                         {canMergePrevious && (
                             <div className="popover-item" onClick={() => handleMenuSelect({ mergeWithPrevious: true })}>
