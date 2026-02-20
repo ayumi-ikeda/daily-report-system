@@ -437,8 +437,13 @@ del {
         display: block;
     }
 
-    /* Ensure background colors are printed */
-    * {
+    /* Ensure background colors are printed only for specific elements */
+    .title-section,
+    .header-label,
+    .date-pill,
+    .date-pill.orange,
+    .date-pill.gray,
+    .date-pill-display {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
     }

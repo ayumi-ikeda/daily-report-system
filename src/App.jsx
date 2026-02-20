@@ -143,8 +143,17 @@ function App() {
         }
     };
 
-    const handlePrint = () => {
-        window.print();
+    const handlePrint = async () => {
+        if (window.electronAPI && window.electronAPI.savePDF) {
+            const result = await window.electronAPI.savePDF();
+            if (result && result.success) {
+                // 保存に成功した場合は何もしない（保存先ダイアログが終わっただけ）
+            } else if (result && !result.canceled) {
+                alert('PDF保存に失敗しました: ' + result.error);
+            }
+        } else {
+            window.print();
+        }
     };
 
     const handleDuplicate = (report) => {

@@ -1,5 +1,6 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { fork } from 'child_process';
 import getPort from 'get-port';
@@ -54,6 +55,35 @@ async function createWindow() {
         mainWindow = null;
     });
 }
+
+ipcMain.handle('save-pdf', async (event) => {
+    if (!mainWindow) return { success: false, error: 'メイン画面が見つかりません' };
+
+    // 日付フォーマット YYYY-MM-DD
+    const dateStr = new Date().toLocaleDateString('ja-JP').replace(/\//g, '-');
+    const defaultPath = `日報_${dateStr}.pdf`;
+
+    const { filePath } = await dialog.showSaveDialog(mainWindow, {
+        title: 'PDFとして保存',
+        defaultPath: defaultPath,
+        filters: [{ name: 'PDFファイル', extensions: ['pdf'] }]
+    });
+
+    if (filePath) {
+        try {
+            const pdfData = await mainWindow.webContents.printToPDF({
+                printBackground: true,
+                pageSize: 'A4',
+            });
+            fs.writeFileSync(filePath, pdfData);
+            return { success: true, filePath };
+        } catch (error) {
+            console.error('PDF生成に失敗しました:', error);
+            return { success: false, error: error.message };
+        }
+    }
+    return { success: false, canceled: true };
+});
 
 app.on('ready', createWindow);
 
