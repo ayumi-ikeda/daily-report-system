@@ -158,41 +158,41 @@ function App() {
 
     const handleDuplicate = (report) => {
         if (window.confirm(`${formatDateJP(new Date(report.startDate))} の日報を複製して作成しますか？\n（日付は1週間後に設定されます）`)) {
-            setReportId(null); // Clear ID to create new
-            setReporterName(report.reporterName || '');
-            const nextDate = addDays(parseISO(report.startDate), 7); // Set to next week
-            setStartDate(nextDate);
-            // Copy entries but maybe clear specific things if needed? No, user wants copy.
-            // Parse entries if it's string in DB but here report object might verify structure.
-            // In fetchReports, 'entries' is text? No, backend sends JSON object based on my memory of server.js?
-            // Wait, server code used JSON.stringify on INSERT, but does it parse on SELECT?
-            // Let's check fetchReports in Dashboard. It just sets reports.
-            // Wait, data loaded in loadReport calls setEntries(data.entries).
-            // But in Dashboard 'reports' probably has entries as string if server doesn't parse it.
-            // Server code: `res.json({ id: ..., entires: entriesJson })`.
-            // Check server.js GET /reports
-            // I need to be careful if 'entries' in the list item is object or string.
-            // If it's string I must parse it.
-            // Let's assume I need to fetch the full report specifically to be safe OR check the data type.
-            // To be safe, I will use loadReport logic but for duplication.
+            // ダッシュボードの一覧には entries が含まれていないため、詳細を取得してから複製する
+            fetch(`${API_BASE}/reports/${report.startDate}`)
+                .then(res => res.json())
+                .then(fullReport => {
+                    setReportId(null); // 新規作成のためIDをクリア
+                    setReporterName(fullReport.reporterName || '');
+                    const nextDate = addDays(parseISO(fullReport.startDate), 7);
+                    setStartDate(nextDate);
 
-            // Re-implement fetching to be safe or use what we have if confident.
-            // Dashboard `reports` list usually comes from `SELECT * FROM reports`.
-            // In `server.js`, `db.all("SELECT * FROM reports", ...)` returns rows.
-            // The `entries` column is TEXT. SQLite driver returns string.
-            // So `report.entries` passed from Dashboard is likely a STRING.
-            // I need to parse it.
+                    let parsedEntries = {};
+                    try {
+                        parsedEntries = typeof fullReport.entries === 'string' ? JSON.parse(fullReport.entries) : fullReport.entries;
+                    } catch (e) {
+                        console.error("Failed to parse entries for duplication", e);
+                    }
 
-            let parsedEntries = {};
-            try {
-                parsedEntries = typeof report.entries === 'string' ? JSON.parse(report.entries) : report.entries;
-            } catch (e) {
-                console.error("Failed to parse entries for duplication", e);
-            }
+                    // 日付キーを1週間後にずらした新しい entries オブジェクトを作成する
+                    const shiftedEntries = {};
+                    if (parsedEntries) {
+                        Object.keys(parsedEntries).forEach(originalDateKey => {
+                            const originalDate = parseISO(originalDateKey);
+                            const shiftedDate = addDays(originalDate, 7);
+                            const shiftedDateKey = format(shiftedDate, 'yyyy-MM-dd');
+                            shiftedEntries[shiftedDateKey] = parsedEntries[originalDateKey];
+                        });
+                    }
 
-            setEntries(parsedEntries || {});
-            setNextWeekPlan(report.nextWeekPlan || '');
-            setView('editor');
+                    setEntries(shiftedEntries);
+                    setNextWeekPlan(fullReport.nextWeekPlan || '');
+                    setView('editor');
+                })
+                .catch(err => {
+                    console.error('Failed to fetch report details for duplication', err);
+                    alert('複製元のデータ取得に失敗しました');
+                });
         }
     };
 
