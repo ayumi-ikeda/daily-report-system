@@ -11,6 +11,9 @@ const __dirname = path.dirname(__filename);
 let mainWindow;
 let serverProcess;
 
+// Disable hardware acceleration to fix contenteditable cursor bugs (React-Quill)
+app.disableHardwareAcceleration();
+
 // Set DB_PATH to userData directory
 process.env.DB_PATH = path.join(app.getPath('userData'), 'database.sqlite');
 process.env.IS_ELECTRON = 'true';

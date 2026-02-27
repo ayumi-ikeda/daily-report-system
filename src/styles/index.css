@@ -253,6 +253,9 @@ body {
 .quill-editor-container .ql-editor {
     padding: 5px;
     min-height: 50px;
+    caret-color: #000;
+    position: relative;
+    z-index: 10;
 }
 
 .next-week-container .ql-container.ql-snow {
