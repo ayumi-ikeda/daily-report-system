@@ -10,6 +10,13 @@ import './styles/index.css';
 
 const API_BASE = 'http://localhost:3001/api';
 
+const preserveSpaces = (html) => {
+    if (!html || typeof html !== 'string') return html;
+    return html.replace(/(<[^>]+>)\s+/g, (match, tag) => {
+        return tag + '&nbsp;'.repeat(match.length - tag.length);
+    }).replace(/  /g, ' &nbsp;');
+};
+
 class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
@@ -61,8 +68,18 @@ function App() {
                 setReportId(data.id);
                 setReporterName(data.reporterName || '');
                 setStartDate(parseISO(data.startDate));
-                setEntries(data.entries || {});
-                setNextWeekPlan(data.nextWeekPlan || '');
+                
+                const processedEntries = {};
+                if (data.entries) {
+                    for (const key in data.entries) {
+                        processedEntries[key] = {
+                            ...data.entries[key],
+                            content: preserveSpaces(data.entries[key].content)
+                        };
+                    }
+                }
+                setEntries(processedEntries);
+                setNextWeekPlan(preserveSpaces(data.nextWeekPlan || ''));
                 setView('editor');
             })
             .catch(err => {
@@ -77,11 +94,21 @@ function App() {
     };
 
     const handleSave = () => {
+        const sanitizedEntries = {};
+        if (entries) {
+            for (const key in entries) {
+                sanitizedEntries[key] = {
+                    ...entries[key],
+                    content: preserveSpaces(entries[key].content)
+                };
+            }
+        }
+
         const dataToSave = {
             reporterName,
             startDate: format(startDate, 'yyyy-MM-dd'),
-            entries,
-            nextWeekPlan
+            entries: sanitizedEntries,
+            nextWeekPlan: preserveSpaces(nextWeekPlan)
         };
 
         fetch(`${API_BASE}/reports`, {
@@ -181,12 +208,15 @@ function App() {
                             const originalDate = parseISO(originalDateKey);
                             const shiftedDate = addDays(originalDate, 7);
                             const shiftedDateKey = format(shiftedDate, 'yyyy-MM-dd');
-                            shiftedEntries[shiftedDateKey] = parsedEntries[originalDateKey];
+                            shiftedEntries[shiftedDateKey] = {
+                                ...parsedEntries[originalDateKey],
+                                content: preserveSpaces(parsedEntries[originalDateKey].content)
+                            };
                         });
                     }
 
                     setEntries(shiftedEntries);
-                    setNextWeekPlan(fullReport.nextWeekPlan || '');
+                    setNextWeekPlan(preserveSpaces(fullReport.nextWeekPlan || ''));
                     setView('editor');
                 })
                 .catch(err => {

@@ -258,6 +258,11 @@ body {
     z-index: 10;
 }
 
+/* Global Quill editor whitespace preservation */
+.ql-editor {
+    white-space: pre-wrap !important;
+}
+
 .next-week-container .ql-container.ql-snow {
     border: none;
 }
@@ -464,6 +469,7 @@ del {
     .ql-editor {
         padding: 0 !important;
         min-height: auto !important;
+        white-space: pre-wrap !important;
         overflow: visible !important;
     }
 
