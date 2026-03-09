@@ -72,7 +72,7 @@ Windows環境の PowerShell で実行してください。
 npm run electron:build
 ```
 
-※ `DailyReportSystem-Setup-1.1.4.exe` が生成されます。
+※ `DailyReportSystem-Setup-1.1.5.exe` が生成されます。
 
 #### Linux 用 (AppImage)
 
@@ -80,13 +80,13 @@ npm run electron:build
 npm run electron:build
 ```
 
-※ `DailyReportSystem-1.1.4.AppImage` が生成されます。
+※ `DailyReportSystem-1.1.5.AppImage` が生成されます。
 
 > [!TIP]
 > Linux環境で実行時にサンドボックス関連のエラー（`FATAL:setuid_sandbox_host.cc` など）が出る場合は、以下のオプションを付けて実行してください：
 >
 > ```bash
-> ./DailyReportSystem-1.1.4.AppImage --no-sandbox
+> ./DailyReportSystem-1.1.5.AppImage --no-sandbox
 > ```
 
 ---
